@@ -92,7 +92,7 @@ class Login extends React.Component {
       },
       body: JSON.stringify({
         username: this.state.username,
-        name: this.state.name,
+        //name: this.state.name,
         password: this.state.password
       })
     })
@@ -111,6 +111,35 @@ class Login extends React.Component {
           alert(`Something went wrong during the login: ${err.message}`);
         }
       });
+  }
+
+  register() {
+    fetch(`${getDomain()}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username: this.state.username,
+        name: this.state.name,
+        password: this.state.password
+      })
+    })
+        .then(response => response.json())
+        .then(returnedUser => {
+          const user = new User(returnedUser);
+          // store the token into the local storage
+          localStorage.setItem("token", user.token);
+          // user login successfully worked --> navigate to the route /game in the GameRouter
+          this.props.history.push(`/game`);
+        })
+        .catch(err => {
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
   }
 
   /**
@@ -138,18 +167,18 @@ class Login extends React.Component {
       <BaseContainer>
         <FormContainer>
           <Form>
+            <Label>Name (only to register)</Label>
+            <InputField
+                placeholder="Enter here.."
+                onChange={e => {
+                  this.handleInputChange("name", e.target.value);
+                }}
+            />
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
               onChange={e => {
                 this.handleInputChange("username", e.target.value);
-              }}
-            />
-            <Label>Name</Label>
-            <InputField
-              placeholder="Enter here.."
-              onChange={e => {
-                this.handleInputChange("name", e.target.value);
               }}
             />
             <Label>Password</Label>
@@ -161,13 +190,24 @@ class Login extends React.Component {
             />
             <ButtonContainer>
               <Button
-                disabled={!this.state.username || !this.state.name || !this.state.password}
+                disabled={!this.state.username || !this.state.password}
                 width="50%"
                 onClick={() => {
                   this.login();
                 }}
               >
                 Login
+              </Button>
+            </ButtonContainer>
+            <ButtonContainer>
+              <Button
+                  disabled={!this.state.username || !this.state.name || !this.state.password}
+                  width="50%"
+                  onClick={() => {
+                    this.register();
+                  }}
+              >
+                Register
               </Button>
             </ButtonContainer>
           </Form>
