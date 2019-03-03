@@ -190,6 +190,7 @@ class Register extends React.Component {
             />
             <ButtonContainer>
               <Button
+                  // problem with register (leuchtet nicht auf)
                   disabled={!this.state.name || !this.state.email || !this.state.username || !this.state.password || !this.state.repeatedPassword}
                   width="50%"
                   onClick={() => {
