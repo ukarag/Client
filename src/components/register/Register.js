@@ -196,7 +196,7 @@ class Register extends React.Component {
               {this.state.validate ?(
 
                   <p className="warningMessage">
-                      Passwords do not match!
+                      Passwords need to match!
                   </p>
               ) :null}
 
