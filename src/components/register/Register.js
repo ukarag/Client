@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import "./Register.css"
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
@@ -105,19 +106,24 @@ class Register extends React.Component {
           password: this.state.password
         })
       })
-          .then(response => response.json())
-          .then(returnedUser => {
-            const user = new User(returnedUser);
-            // store the token into the local storage
-            localStorage.setItem("token", user.token);
-            // user login successfully worked --> navigate to the route /game in the GameRouter
-            this.props.history.push(`/game`);
+          .then(async res=>{
+              if (!res.ok) {
+                  const error = await res.json();
+                  alert(error.message);
+                  this.setState({name: null});
+                  this.setState({username: null});
+                  this.setState({password: null});
+                  this.setState({repeatedPassword: null});
+              } else{
+                  this.props.history.push('/login')
+              }
           })
+
           .catch(err => {
             if (err.message.match(/Failed to fetch/)) {
               alert("The server cannot be reached. Did you start it?");
             } else {
-              alert(`Something went wrong during the login: ${err.message}`);
+              alert(`Something went wrong during the register: ${err.message}`);
             }
           });
     }
@@ -186,6 +192,14 @@ class Register extends React.Component {
                   this.handleInputChange("repeatedPassword", e.target.value);
                 }}
             />
+
+              {this.state.validate ?(
+
+                  <p className="warningMessage">
+                      Passwords do not match!
+                  </p>
+              ) :null}
+
             <ButtonContainer>
               <Button
                   disabled={!this.state.name || !this.state.email || !this.state.username || !this.state.password || !this.state.repeatedPassword}

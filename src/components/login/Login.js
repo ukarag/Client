@@ -98,13 +98,20 @@ class Login extends React.Component {
         password: this.state.password
       })
     })
-        .then(response => response.json())
-        .then(returnedUser => {
-          const user = new User(returnedUser);
-          // store the token into the local storage
-          localStorage.setItem("token", user.token);
-          // user login successfully worked --> navigate to the route /game in the GameRouter
-          this.props.history.push(`/game`);
+        .then(async res => {
+          if (!res.ok) {
+              const error = await res.json();
+              alert(error.message);
+
+              this.setState({username: null});
+              this.setState({password: null});
+          }else {
+              const user = new User(await res.json());
+              // store the token into the local storage
+              localStorage.setItem("token", user.token);
+              // user login successfully worked --> navigate to the route /game in the GameRouter
+              this.props.history.push(`/game`);
+          }
         })
         .catch(err => {
           if (err.message.match(/Failed to fetch/)) {
