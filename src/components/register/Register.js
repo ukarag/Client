@@ -21,7 +21,7 @@ const Form = styled.div`
   flex-direction: column;
   justify-content: center;
   width: 60%;
-  height: 375px;
+  height: 500px;
   font-size: 16px;
   font-weight: 300;
   padding-left: 37px;
@@ -81,7 +81,7 @@ class Register extends React.Component {
       username: null,
       password: null,
       repeatedPassword: null,
-      //validate: true
+      validate: true
     };
   }
   /**
@@ -89,11 +89,11 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
-    /*if (this.state.password !== this.state.repeatedPassword){
+    if (this.state.password !== this.state.repeatedPassword){
       this.setState({validate: false});
       this.setState({password: null});
       this.setState({repeatedPassword: null});
-    } else {*/
+    } else {
       fetch(`${getDomain()}/users`, {
         method: "POST",
         headers: {
@@ -113,7 +113,7 @@ class Register extends React.Component {
             // store the token into the local storage
             localStorage.setItem("token", user.token);
             // user login successfully worked --> navigate to the route /game in the GameRouter
-            this.props.history.push(`/login`);
+            this.props.history.push(`/game`);
           })
           .catch(err => {
             if (err.message.match(/Failed to fetch/)) {
@@ -122,7 +122,7 @@ class Register extends React.Component {
               alert(`Something went wrong during the login: ${err.message}`);
             }
           });
-   // }
+    }
   }
 
 
@@ -162,14 +162,14 @@ class Register extends React.Component {
             <InputField
                 placeholder="Enter here.."
                 onChange={e => {
-                  this.handleInputChange("name", e.target.value);
+                  this.handleInputChange("email", e.target.value);
                 }}
             />
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
               onChange={e => {
-                this.handleInputChange("email", e.target.value);
+                this.handleInputChange("username", e.target.value);
               }}
             />
             <Label>Password</Label>
@@ -185,7 +185,7 @@ class Register extends React.Component {
                 placeholder="Enter here.."
                 type="password"
                 onChange={e => {
-                  this.handleInputChange("password", e.target.value);
+                  this.handleInputChange("repeatedPassword", e.target.value);
                 }}
             />
             <ButtonContainer>
