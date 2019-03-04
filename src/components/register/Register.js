@@ -80,7 +80,6 @@ class Register extends React.Component {
       email: null,
       username: null,
       password: null,
-      repeatedPassword: null,
       validate: true
     };
   }
@@ -103,8 +102,7 @@ class Register extends React.Component {
           username: this.state.username,
           name: this.state.name,
           email: this.state.email,
-          password: this.state.password,
-          repeatedPassword: this.state.repeatedPassword
+          password: this.state.password
         })
       })
           .then(response => response.json())
@@ -190,7 +188,6 @@ class Register extends React.Component {
             />
             <ButtonContainer>
               <Button
-                  // problem with register (leuchtet nicht auf)
                   disabled={!this.state.name || !this.state.email || !this.state.username || !this.state.password || !this.state.repeatedPassword}
                   width="50%"
                   onClick={() => {

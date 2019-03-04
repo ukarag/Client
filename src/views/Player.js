@@ -14,6 +14,7 @@ const Container = styled.div`
 const UserName = styled.div`
   font-weight: lighter;
   margin-left: 5px;
+  color: #ffffff;
 `;
 
 const Name = styled.div`
@@ -25,6 +26,19 @@ const Id = styled.div`
   margin-left: auto;
   margin-right: 10px;
   font-weight: bold;
+`;
+
+const Email = styled.div`
+  font-weight: lighter;
+  margin-left: 5px;
+  color: #6b3096;
+`;
+
+
+const Password = styled.div`
+  font-weight: lighter;
+  margin-left: 5px;
+  color: #30965a;
 `;
 
 /**
@@ -39,6 +53,7 @@ const Player = ({ user }) => {
   return (
     <Container>
       <Name>{user.name}</Name> <UserName>{user.username}</UserName>
+        <Email>{user.email}</Email> <Password>{user.password}</Password>
       <Id>Id: {user.id}</Id>
     </Container>
   );
