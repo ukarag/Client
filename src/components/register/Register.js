@@ -102,7 +102,7 @@ class Register extends React.Component {
         body: JSON.stringify({
           username: this.state.username,
           name: this.state.name,
-          email: this.state.email,
+          bday: this.state.bday,
           password: this.state.password
         })
       })
@@ -112,6 +112,7 @@ class Register extends React.Component {
                   alert(error.message);
                   this.setState({name: null});
                   this.setState({username: null});
+                  this.setState({bday: null});
                   this.setState({password: null});
                   this.setState({repeatedPassword: null});
               } else{
@@ -162,18 +163,18 @@ class Register extends React.Component {
                   this.handleInputChange("name", e.target.value);
                 }}
             />
-            <Label>Email</Label>
-            <InputField
-                placeholder="Enter here.."
-                onChange={e => {
-                  this.handleInputChange("email", e.target.value);
-                }}
-            />
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
               onChange={e => {
                 this.handleInputChange("username", e.target.value);
+              }}
+            />
+            <Label>Birthday</Label>
+            <InputField
+              placeholder="Enter here.."
+              onChange={e => {
+                this.handleInputChange("bday", e.target.value);
               }}
             />
             <Label>Password</Label>
@@ -202,7 +203,7 @@ class Register extends React.Component {
 
             <ButtonContainer>
               <Button
-                  disabled={!this.state.name || !this.state.email || !this.state.username || !this.state.password || !this.state.repeatedPassword}
+                  disabled={!this.state.name || !this.state.bday || !this.state.username || !this.state.password || !this.state.repeatedPassword}
                   width="50%"
                   onClick={() => {
                     this.register();
