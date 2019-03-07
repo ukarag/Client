@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import "./Login.css"
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
@@ -76,7 +77,9 @@ class Login extends React.Component {
     super();
     this.state = {
       username: null,
-      password: null
+      password: null,
+      userList: null,
+      notFound: false
     };
   }
   /**
@@ -88,31 +91,26 @@ class Login extends React.Component {
   }
 
   login() {
-    fetch(`${getDomain()}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username: this.state.username,
-        password: this.state.password
-      })
-    })
-        .then(response => response.json())
-        .then(returnedUser => {
-          const user = new User(returnedUser);
+    const found = (this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password)) != null;
+    if (found){
+      const user = new User(this.userList);
+      localStorage.setItem("token", user.token);
+      this.props.history.push("/game");
+    } else {
+      this.setState({notFound: true});
+      this.props.history.push("/login")
+
+    }.then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.message);
+        } else {
+          const user = new User(data);
           // store the token into the local storage
           localStorage.setItem("token", user.token);
           // user login successfully worked --> navigate to the route /game in the GameRouter
           this.props.history.push(`/game`);
-        })
-        .catch(err => {
-          if (err.message.match(/Failed to fetch/)) {
-            alert("The server cannot be reached. Did you start it?");
-          } else {
-            alert(`Something went wrong during the login: ${err.message}`);
-          }
-        });
+
   }
 
   /**
@@ -133,13 +131,35 @@ class Login extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {}
+  componentDidMount() {
+    fetch(`${getDomain()}/users`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+    })
+      .then(response => response.json())
+      .then(users => {
+        this.setState({userList: users})
+      })
+      .catch(err => {
+        console.log(err);
+          alert(`Something went wrong during the login: ${err.message}`);
+      });
+  }
 
   render() {
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
+            {this.state.notFound ?(
+
+              <p className="usernameNotFoundWarning">
+                Wrong username or password!
+              </p>
+            ) :null}
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
@@ -188,3 +208,16 @@ class Login extends React.Component {
  * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
  */
 export default withRouter(Login);
+/*
+.then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.message);
+          } else {
+            const user = new User(data);
+            // store the token into the local storage
+            localStorage.setItem("token", user.token);
+            // user login successfully worked --> navigate to the route /game in the GameRouter
+            this.props.history.push(`/game`);
+          }
+ */

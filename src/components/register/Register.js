@@ -81,7 +81,9 @@ class Register extends React.Component {
       email: null,
       username: null,
       password: null,
-      validate: true
+      validate: true,
+      userList: null,
+      exist: false
     };
   }
   /**
@@ -89,10 +91,13 @@ class Register extends React.Component {
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
   register() {
-    if (this.state.password !== this.state.repeatedPassword){
+    const usernameList = this.state.userList.map(user => user.username);
+    if (usernameList.includes(this.state.username)){
+      this.setState( {exist: true});
+      this.props.history.push("/register");
+    } else if (this.state.password !== this.state.repeatedPassword){
       this.setState({validate: false});
-      this.setState({password: null});
-      this.setState({repeatedPassword: null});
+      this.props.history.push("/register");
     } else {
       fetch(`${getDomain()}/users`, {
         method: "POST",
@@ -102,24 +107,10 @@ class Register extends React.Component {
         body: JSON.stringify({
           username: this.state.username,
           name: this.state.name,
-          bday: this.state.bday,
           password: this.state.password
         })
       })
-          .then(async res=>{
-              if (!res.ok) {
-                  const error = await res.json();
-                  alert(error.message);
-                  this.setState({name: null});
-                  this.setState({username: null});
-                  this.setState({bday: null});
-                  this.setState({password: null});
-                  this.setState({repeatedPassword: null});
-              } else{
-                  this.props.history.push('/login')
-              }
-          })
-
+          .then(response => response.json())
           .catch(err => {
             if (err.message.match(/Failed to fetch/)) {
               alert("The server cannot be reached. Did you start it?");
@@ -127,7 +118,12 @@ class Register extends React.Component {
               alert(`Something went wrong during the register: ${err.message}`);
             }
           });
+      this.props.history.push("/login");
     }
+  }
+
+  return(){
+    this.props.history.push("/login")
   }
 
 
@@ -149,13 +145,39 @@ class Register extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {}
+  componentDidMount() {
+    fetch(`${getDomain()}/users`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => response.json())
+    .then(users => {
+      this.setState({ userList: users });
+    })
+    .catch(err => {
+      console.log(err);
+      alert("Something went wrong fetching the users: " + err);
+    });}
 
   render() {
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
+            {!this.state.validate ?(
+
+              <p className="passwordMatchWarning">
+                Passwords need to match!
+              </p>
+            ) :null}
+            {this.state.exist ?(
+
+              <p className="usernameExistsWarning">
+                Username already exists!
+              </p>
+            ) :null}
             <Label>Name</Label>
             <InputField
                 placeholder="Enter here.."
@@ -168,13 +190,6 @@ class Register extends React.Component {
               placeholder="Enter here.."
               onChange={e => {
                 this.handleInputChange("username", e.target.value);
-              }}
-            />
-            <Label>Birthday</Label>
-            <InputField
-              placeholder="Enter here.."
-              onChange={e => {
-                this.handleInputChange("bday", e.target.value);
               }}
             />
             <Label>Password</Label>
@@ -194,22 +209,26 @@ class Register extends React.Component {
                 }}
             />
 
-              {this.state.validate ?(
-
-                  <p className="warningMessage">
-                      Passwords need to match!
-                  </p>
-              ) :null}
-
             <ButtonContainer>
               <Button
-                  disabled={!this.state.name || !this.state.bday || !this.state.username || !this.state.password || !this.state.repeatedPassword}
+                  disabled={!this.state.name || !this.state.username || !this.state.password || !this.state.repeatedPassword}
                   width="50%"
                   onClick={() => {
                     this.register();
                   }}
               >
                 Register
+              </Button>
+            </ButtonContainer>
+
+            <ButtonContainer>
+              <Button
+                width="50%"
+                onClick={() => {
+                  this.return();
+                }}
+              >
+                Return
               </Button>
             </ButtonContainer>
 

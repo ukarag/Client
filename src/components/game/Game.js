@@ -24,6 +24,12 @@ const PlayerContainer = styled.li`
   justify-content: center;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
+
 class Game extends React.Component {
   constructor() {
     super();
@@ -67,7 +73,7 @@ class Game extends React.Component {
           {!this.state.users ? (
               <Spinner />
           ) : (
-              <div>
+                <div>
                 <Users>
                   {this.state.users.map(user => {
                     return (
@@ -77,6 +83,7 @@ class Game extends React.Component {
                     );
                   })}
                 </Users>
+                <ButtonContainer>
                 <Button
                     width="100%"
                     onClick={() => {
@@ -85,6 +92,9 @@ class Game extends React.Component {
                 >
                   Logout
                 </Button>
+              </ButtonContainer>
+
+
               </div>
           )}
         </Container>
