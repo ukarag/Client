@@ -1,11 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import "./Login.css"
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
+import "./Login.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -86,23 +86,30 @@ class Login extends React.Component {
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
-  register() {
-    this.props.history.push("/register");
-  }
+
 
   login() {
-    const found = (this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password));
-    console.log(found);
-    if (!found){
+    const found = this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password) != null;
+    //const found = true;
+    if (found) {
       const user = new User(this.userList);
+      // store the token into the local storage
       localStorage.setItem("token", user.token);
-      this.props.history.push("/game");
+      // user login successfully worked --> navigate to the route /game in the GameRouter
+      console.log("(*) Login done User known!");
+      console.log(user);
+      this.props.history.push(`/game`);
     } else {
-      this.setState({notFound: true});
-      this.props.history.push("/login")
-
+      console.log("(*) Login done User unknown");
+      //this.setState({notFound: true});
+      this.props.history.push(`/login`);
     }
+  }
 
+
+
+  register(){
+    this.props.history.push(`/register`);
   }
 
   /**
@@ -128,30 +135,30 @@ class Login extends React.Component {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
-      },
-
+      }
     })
       .then(response => response.json())
       .then(users => {
-        this.setState({userList: users})
+        this.setState({ userList: users });
       })
       .catch(err => {
         console.log(err);
-          alert(`Something went wrong during the login: ${err.message}`);
+        alert("Something went wrong fetching the users: " + err);
       });
   }
+
 
   render() {
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
-            {this.state.notFound ?(
-
-              <p className="usernameNotFoundWarning">
-                Wrong username or password!
+            {this.state.notFound ? (
+              <p className="wrongLogin">
+                Wrong Password or username!
               </p>
-            ) :null}
+            ) : null}
+
             <Label>Username</Label>
             <InputField
               placeholder="Enter here.."
@@ -161,11 +168,11 @@ class Login extends React.Component {
             />
             <Label>Password</Label>
             <InputField
-                placeholder="Enter here.."
-                type="password"
-                onChange={e => {
-                  this.handleInputChange("password", e.target.value);
-                }}
+              placeholder="Enter here.."
+              type="password"
+              onChange={e => {
+                this.handleInputChange("password", e.target.value);
+              }}
             />
             <ButtonContainer>
               <Button
@@ -176,14 +183,15 @@ class Login extends React.Component {
                 }}
               >
                 Login
+
               </Button>
             </ButtonContainer>
             <ButtonContainer>
               <Button
-                  width="50%"
-                  onClick={() => {
-                    this.register();
-                  }}
+                width="50%"
+                onClick={() => {
+                  this.register();
+                }}
               >
                 Register
               </Button>
@@ -200,16 +208,3 @@ class Login extends React.Component {
  * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
  */
 export default withRouter(Login);
-/*
-.then(response => response.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.message);
-          } else {
-            const user = new User(data);
-            // store the token into the local storage
-            localStorage.setItem("token", user.token);
-            // user login successfully worked --> navigate to the route /game in the GameRouter
-            this.props.history.push(`/game`);
-          }
- */

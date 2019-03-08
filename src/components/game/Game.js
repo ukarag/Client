@@ -22,12 +22,7 @@ const PlayerContainer = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  cursor: ${props => (props.disabled ? "default" : "pointer")};
 `;
 
 class Game extends React.Component {
@@ -50,54 +45,55 @@ class Game extends React.Component {
         "Content-Type": "application/json"
       }
     })
-        .then(response => response.json())
-        .then(async users => {
-          // delays continuous execution of an async operation for 0.8 seconds.
-          // This is just a fake async call, so that the spinner can be displayed
-          // feel free to remove it :)
-          await new Promise(resolve => setTimeout(resolve, 800));
+      .then(response => response.json())
+      .then(async users => {
+        // delays continuous execution of an async operation for 0.8 seconds.
+        // This is just a fake async call, so that the spinner can be displayed
+        // feel free to remove it :)
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-          this.setState({ users });
-        })
-        .catch(err => {
-          console.log(err);
-          alert("Something went wrong fetching the users: " + err);
-        });
+        this.setState({ users });
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
   }
 
   render() {
     return (
-        <Container>
-          <h2>Happy Coding! </h2>
-          <p>Get all users from secure end point:</p>
-          {!this.state.users ? (
-              <Spinner />
-          ) : (
-                <div>
-                <Users>
-                  {this.state.users.map(user => {
-                    return (
-                        <PlayerContainer key={user.id}>
-                          <Player user={user} />
-                        </PlayerContainer>
-                    );
-                  })}
-                </Users>
-                <ButtonContainer>
-                <Button
-                    width="100%"
+      <Container>
+        <h2>Happy Coding! </h2>
+        <p>Get all users from secure end point:</p>
+        {!this.state.users ? (
+          <Spinner />
+        ):(
+          <div>
+            <Users>
+              {this.state.users.map(user => {
+                return (
+                  <PlayerContainer
+                    key={user.id}
                     onClick={() => {
-                      this.logout();
+                      this.props.history.push(`/profile/${user.id}`);
                     }}
-                >
-                  Logout
-                </Button>
-              </ButtonContainer>
-
-
-              </div>
-          )}
-        </Container>
+                  >
+                    <Player user={user}/>
+                  </PlayerContainer>
+                );
+              })}
+            </Users>
+            <Button
+              width="100%"
+              onClick={() => {
+                this.logout();
+              }}
+            >
+              Logout
+            </Button>
+          </div>
+        )}
+      </Container>
     );
   }
 }

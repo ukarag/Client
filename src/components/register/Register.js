@@ -1,12 +1,12 @@
 import React from "react";
 import styled from "styled-components";
-import "./Register.css"
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import User from "../shared/models/User";
+//import axios from 'axios';
 import { withRouter } from "react-router-dom";
 import { Button } from "../../views/design/Button";
-
+import "./Register.css"
 
 const FormContainer = styled.div`
   margin-top: 2em;
@@ -68,65 +68,80 @@ const ButtonContainer = styled.div`
  * @Class
  */
 class Register extends React.Component {
-  /**
-   * If you don’t initialize the state and you don’t bind methods, you don’t need to implement a constructor for your React component.
-   * The constructor for a React component is called before it is mounted (rendered).
-   * In this case the initial state is defined in the constructor. The state is a JS object containing two fields: name and username
-   * These fields are then handled in the onChange() methods in the resp. InputFields
-   */
   constructor() {
     super();
     this.state = {
       name: null,
-      email: null,
       username: null,
       password: null,
+      repeatedPassword: null,
       validate: true,
-      userList: null,
-      exist: false
+      exist: false,
+      userList: null
     };
   }
   /**
    * HTTP POST request is sent to the backend.
    * If the request is successful, a new user is returned to the front-end and its token is stored in the localStorage.
    */
-  register() {
-    const usernameList = this.state.userList.map(user => user.username);
-    if (usernameList.includes(this.state.username)){
-      this.setState( {exist: true});
-      this.props.history.push("/register");
-    } else if (this.state.password !== this.state.repeatedPassword) {
-      this.setState({validate: false});
-      this.props.history.push("/register");
 
-    } else {
+  register() {
+    const usernameList = this.state.userList.map(p => p.username);
+    if (usernameList.includes(this.state.username)) {
+      this.setState({exist: true});
+      this.props.history.push(`/register`);
+      console.log("username already in list");
+    }
+    else if(this.state.password !== this.state.repeatedPassword){
+      this.setState({validate: false});
+      this.setState({password: null});
+      this.setState({repeatedPassword: null});
+      this.props.history.push(`/register`);
+      console.log("repeatedPassword != password");
+    }
+    else {
+      console.log("does it work?");
+      //this.props.history.push(`/login`);
       fetch(`${getDomain()}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          username: this.state.username,
           name: this.state.name,
-          password: this.state.password
+          username: this.state.username,
+          password: this.state.password,
+          //birthday: this.state.birthday
         })
       })
-          .then(response => response.json())
-          .catch(err => {
-            if (err.message.match(/Failed to fetch/)) {
-              alert("The server cannot be reached. Did you start it?");
-            } else {
-              alert(`Something went wrong during the register: ${err.message}`);
-            }
-          });
-      this.props.history.push("/login");
+        .then(async res=>{
+          if (!res.ok) {
+            const error = await res.json();
+            alert(error.message);
+            this.setState({name: null});
+            this.setState({username: null});
+            this.setState({password: null});
+            //this.setState({birthday: null});
+            this.setState({repeatedPassword: null});
+            console.log("res not ok!");
+          } else{
+            this.props.history.push('/login')
+          }
+        })
+        .catch(err => {
+          console.log("nope");
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
     }
   }
 
-  return(){
-    this.props.history.push("/login")
+  return() {
+    this.props.history.push("/login");
   }
-
 
   /**
    *  Every time the user enters something in the input field, the state gets updated.
@@ -134,57 +149,49 @@ class Register extends React.Component {
    * @param value (the value that gets assigned to the identified state key)
    */
   handleInputChange(key, value) {
-    // Example: if the key is username, this statement is the equivalent to the following one:
-    // this.setState({'username': value});
     this.setState({ [key]: value });
   }
 
-  /**
-   * componentDidMount() is invoked immediately after a component is mounted (inserted into the tree).
-   * Initialization that requires DOM nodes should go here.
-   * If you need to load data from a remote endpoint, this is a good place to instantiate the network request.
-   * You may call setState() immediately in componentDidMount().
-   * It will trigger an extra rendering, but it will happen before the browser updates the screen.
-   */
   componentDidMount() {
     fetch(`${getDomain()}/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-    .then(response => response.json())
-    .then(users => {
-      this.setState({ userList: users });
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
-    .catch(err => {
-      console.log(err);
-      alert("Something went wrong fetching the users: " + err);
-    });}
+      .then(response => response.json())
+      .then(users => {
+        this.setState({ userList: users });
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
+  }
 
   render() {
     return (
       <BaseContainer>
         <FormContainer>
           <Form>
-            {!this.state.validate ?(
-
+            {!this.state.validate ? (
               <p className="passwordMatchWarning">
                 Passwords need to match!
               </p>
             ) :null}
-            {this.state.exist ?(
 
+            {this.state.exist ? (
               <p className="usernameExistsWarning">
-                Username already exists!
+                Username not available!
               </p>
             ) :null}
+
             <Label>Name</Label>
             <InputField
-                placeholder="Enter here.."
-                onChange={e => {
-                  this.handleInputChange("name", e.target.value);
-                }}
+              placeholder="Enter here.."
+              onChange={e => {
+                this.handleInputChange("name", e.target.value);
+              }}
             />
             <Label>Username</Label>
             <InputField
@@ -195,28 +202,30 @@ class Register extends React.Component {
             />
             <Label>Password</Label>
             <InputField
-                placeholder="Enter here.."
-                type="password"
-                onChange={e => {
-                  this.handleInputChange("password", e.target.value);
-                }}
+              placeholder="Enter here.."
+              type = "password"
+              onChange={e => {
+                this.handleInputChange("password", e.target.value);
+              }}
             />
-            <Label>Repeat password</Label>
+            <Label>Validate password</Label>
             <InputField
-                placeholder="Enter here.."
-                type="password"
-                onChange={e => {
-                  this.handleInputChange("repeatedPassword", e.target.value);
-                }}
+              placeholder="Enter here.."
+              type = "password"
+              onChange={e => {
+                this.handleInputChange("repeatedPassword", e.target.value);
+              }}
             />
-
             <ButtonContainer>
+
               <Button
-                  disabled={!this.state.name || !this.state.username || !this.state.password || !this.state.repeatedPassword}
-                  width="50%"
-                  onClick={() => {
-                    this.register();
-                  }}
+                disabled={!this.state.name || !this.state.username ||
+                !this.state.password || !this.state.repeatedPassword
+                }
+                width ="50%"
+                onClick={() => {
+                  this.register();
+                }}
               >
                 Register
               </Button>
@@ -224,7 +233,7 @@ class Register extends React.Component {
 
             <ButtonContainer>
               <Button
-                width="50%"
+                width ="50%"
                 onClick={() => {
                   this.return();
                 }}
@@ -232,7 +241,6 @@ class Register extends React.Component {
                 Return
               </Button>
             </ButtonContainer>
-
           </Form>
         </FormContainer>
       </BaseContainer>
@@ -240,8 +248,4 @@ class Register extends React.Component {
   }
 }
 
-/**
- * You can get access to the history object's properties via the withRouter.
- * withRouter will pass updated match, location, and history props to the wrapped component whenever it renders.
- */
 export default withRouter(Register);
