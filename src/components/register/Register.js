@@ -95,9 +95,10 @@ class Register extends React.Component {
     if (usernameList.includes(this.state.username)){
       this.setState( {exist: true});
       this.props.history.push("/register");
-    } else if (this.state.password !== this.state.repeatedPassword){
+    } else if (this.state.password !== this.state.repeatedPassword) {
       this.setState({validate: false});
       this.props.history.push("/register");
+
     } else {
       fetch(`${getDomain()}/users`, {
         method: "POST",
@@ -147,7 +148,7 @@ class Register extends React.Component {
    */
   componentDidMount() {
     fetch(`${getDomain()}/users`, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json"
     }

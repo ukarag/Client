@@ -91,8 +91,9 @@ class Login extends React.Component {
   }
 
   login() {
-    const found = (this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password)) != null;
-    if (found){
+    const found = (this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password));
+    console.log(found);
+    if (!found){
       const user = new User(this.userList);
       localStorage.setItem("token", user.token);
       this.props.history.push("/game");
@@ -100,16 +101,7 @@ class Login extends React.Component {
       this.setState({notFound: true});
       this.props.history.push("/login")
 
-    }.then(response => response.json())
-      .then(data => {
-        if (data.error) {
-          alert(data.message);
-        } else {
-          const user = new User(data);
-          // store the token into the local storage
-          localStorage.setItem("token", user.token);
-          // user login successfully worked --> navigate to the route /game in the GameRouter
-          this.props.history.push(`/game`);
+    }
 
   }
 
