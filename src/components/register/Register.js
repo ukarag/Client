@@ -111,7 +111,6 @@ class Register extends React.Component {
           name: this.state.name,
           username: this.state.username,
           password: this.state.password,
-          //birthday: this.state.birthday
         })
       })
         .then(async res=>{

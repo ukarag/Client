@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
 import { GameGuard } from "../routeProtectors/GameGuard";
 import GameRouter from "./GameRouter";
-//import ProfileRouter from "./ProfileRouter";
+import ProfileRouter from "./ProfileRouter";
 import { LoginGuard } from "../routeProtectors/LoginGuard";
 import Login from "../../login/Login";
 import Register from "../../register/Register";
@@ -27,6 +27,15 @@ class AppRouter extends React.Component {
               render={() => (
                 <GameGuard>
                   <GameRouter base={"/game"} />
+                </GameGuard>
+              )}
+            />
+
+            <Route
+              path="/profile"
+              render={() => (
+                <GameGuard>
+                  <ProfileRouter base={"/profile"} />
                 </GameGuard>
               )}
             />

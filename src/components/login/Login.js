@@ -101,14 +101,38 @@ class Login extends React.Component {
       this.props.history.push(`/game`);
     } else {
       console.log("(*) Login done User unknown");
-      //this.setState({notFound: true});
+      this.setState({notFound: true});
       this.props.history.push(`/login`);
+      console.log("hi");
     }
   }
 
+      /*
+      .then(users => {
+        this.setState({ userList: users });
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
+
+    if (found) {
+      const user = new User(this.userList);
+      // store the token into the local storage
+      localStorage.setItem("token", user.token);
+      // user login successfully worked --> navigate to the route /game in the GameRouter
+      console.log("(*) Login done User known!");
+      console.log(user);
+      this.props.history.push(`/game`);
+    } else {
+      console.log("(*) Login done User unknown");
+      //this.setState({notFound: true});
+      this.props.history.push(`/login`);
+    }*/
 
 
-  register(){
+
+  register() {
     this.props.history.push(`/register`);
   }
 
@@ -130,7 +154,8 @@ class Login extends React.Component {
    * You may call setState() immediately in componentDidMount().
    * It will trigger an extra rendering, but it will happen before the browser updates the screen.
    */
-  componentDidMount() {
+
+  componentDidMount(){
     fetch(`${getDomain()}/users`, {
       method: "GET",
       headers: {
@@ -145,7 +170,7 @@ class Login extends React.Component {
         console.log(err);
         alert("Something went wrong fetching the users: " + err);
       });
-  }
+}
 
 
   render() {
