@@ -89,47 +89,22 @@ class Login extends React.Component {
 
 
   login() {
-    const found = this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password) != null;
-    //const found = true;
-    if (found) {
-      const user = new User(this.userList);
+    const found = this.state.userList.find(look => look.username === this.state.username && look.password === this.state.password);
+
+    if (!!found) {
+      const user = new User(found);
+      console.log(this.state.userList);
+
+
       // store the token into the local storage
       localStorage.setItem("token", user.token);
       // user login successfully worked --> navigate to the route /game in the GameRouter
-      console.log("(*) Login done User known!");
-      console.log(user);
       this.props.history.push(`/game`);
     } else {
-      console.log("(*) Login done User unknown");
       this.setState({notFound: true});
       this.props.history.push(`/login`);
-      console.log("hi");
     }
   }
-
-      /*
-      .then(users => {
-        this.setState({ userList: users });
-      })
-      .catch(err => {
-        console.log(err);
-        alert("Something went wrong fetching the users: " + err);
-      });
-
-    if (found) {
-      const user = new User(this.userList);
-      // store the token into the local storage
-      localStorage.setItem("token", user.token);
-      // user login successfully worked --> navigate to the route /game in the GameRouter
-      console.log("(*) Login done User known!");
-      console.log(user);
-      this.props.history.push(`/game`);
-    } else {
-      console.log("(*) Login done User unknown");
-      //this.setState({notFound: true});
-      this.props.history.push(`/login`);
-    }*/
-
 
 
   register() {
@@ -202,7 +177,7 @@ class Login extends React.Component {
             <ButtonContainer>
               <Button
                 disabled={!this.state.username || !this.state.password}
-                width="50%"
+                width="40%"
                 onClick={() => {
                   this.login();
                 }}
@@ -213,7 +188,7 @@ class Login extends React.Component {
             </ButtonContainer>
             <ButtonContainer>
               <Button
-                width="50%"
+                width="40%"
                 onClick={() => {
                   this.register();
                 }}

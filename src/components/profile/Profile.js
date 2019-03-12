@@ -82,7 +82,7 @@ class Profile extends React.Component {
         </table>
         <ButtonContainer>
           <Button
-            width="50%"
+            width="40%"
             onClick={() => {
               this.return();
             }}
@@ -94,7 +94,7 @@ class Profile extends React.Component {
         <ButtonContainer>
 
           <Button
-            width="50%"
+            width="40%"
             onClick={() => {
               this.settings();
             }}

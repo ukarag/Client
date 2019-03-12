@@ -176,7 +176,7 @@ class Settings extends React.Component {
         </table>
         <ButtonContainer>
           <Button
-            width="100%"
+            width="40%"
             onClick={() => {
               this.change();
             }}
@@ -186,7 +186,7 @@ class Settings extends React.Component {
         </ButtonContainer>
         <ButtonContainer>
           <Button
-            width="100%"
+            width="40%"
             onClick={() => {
               this.props.history.push(`/profile/${this.props.match.params.id}`);
             }}
@@ -201,7 +201,7 @@ class Settings extends React.Component {
         <h3>You can only edit your own profile!</h3>
         <ButtonContainer>
           <Button
-            width="100%"
+            width="40%"
             onClick={() => {
               this.props.history.push(`/profile/${this.props.match.params.id}`);
             }}

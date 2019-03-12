@@ -221,7 +221,7 @@ class Register extends React.Component {
                 disabled={!this.state.name || !this.state.username ||
                 !this.state.password || !this.state.repeatedPassword
                 }
-                width ="50%"
+                width ="40%"
                 onClick={() => {
                   this.register();
                 }}
@@ -232,7 +232,7 @@ class Register extends React.Component {
 
             <ButtonContainer>
               <Button
-                width ="50%"
+                width ="40%"
                 onClick={() => {
                   this.return();
                 }}
