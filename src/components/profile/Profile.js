@@ -24,7 +24,7 @@ class Profile extends React.Component {
       status: null,
       creationDate: null,
       birthday: null,
-      mine: null
+      mine: false
     };
   }
 
@@ -33,7 +33,7 @@ class Profile extends React.Component {
   }
 
   settings() {
-    this.props.history.push(`/profile/${this.props.match.params.id}/settings`);
+    this.props.history.push(`/profile/settings`);
   }
 
   componentDidMount() {
@@ -43,6 +43,7 @@ class Profile extends React.Component {
     })
       .then(response => response.json())
       .then( user => {
+        this.setState({name: user.name});
         this.setState({username: user.username});
         this.setState({status: user.status});
         this.setState({creationDate: user.creationDate});
@@ -63,6 +64,10 @@ class Profile extends React.Component {
       <Container>
         <h2>Profile of {this.state.username} </h2>
         <table width="400px">
+          <tr>
+            <th >user:</th>
+            <th>{this.state.user}</th>
+          </tr>
           <tr>
             <th >username:</th>
             <th>{this.state.username}</th>

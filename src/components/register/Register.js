@@ -100,7 +100,6 @@ class Register extends React.Component {
       console.log("repeatedPassword != password");
     }
     else {
-      console.log("does it work?");
       //this.props.history.push(`/login`);
       fetch(`${getDomain()}/users`, {
         method: "POST",
@@ -120,7 +119,7 @@ class Register extends React.Component {
             this.setState({name: null});
             this.setState({username: null});
             this.setState({password: null});
-            //this.setState({birthday: null});
+            this.setState({repeatedPassword: null});
             this.setState({repeatedPassword: null});
             console.log("res not ok!");
           } else{
@@ -128,7 +127,6 @@ class Register extends React.Component {
           }
         })
         .catch(err => {
-          console.log("nope");
           if (err.message.match(/Failed to fetch/)) {
             alert("The server cannot be reached. Did you start it?");
           } else {

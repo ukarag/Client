@@ -6,6 +6,7 @@ import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -35,6 +36,7 @@ class Game extends React.Component {
 
   logout() {
     localStorage.removeItem("token");
+    localStorage.setItem("status", "OFFLINE");
     this.props.history.push("/login");
   }
 
@@ -75,7 +77,7 @@ class Game extends React.Component {
                   <PlayerContainer
                     key={user.id}
                     onClick={() => {
-                      this.props.history.push(`/profile/${user.id}`);
+                      this.props.history.push(`/profile/${user.id}/show`);
                     }}
                   >
                     <Player user={user}/>

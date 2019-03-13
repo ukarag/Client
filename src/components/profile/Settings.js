@@ -4,6 +4,7 @@ import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -68,6 +69,7 @@ class Settings extends React.Component {
       newUsername: null,
       usernameEdit: null,
       status: null,
+      userList: null,
       creationDate: null,
       birthday: null,
       mine: false
@@ -88,27 +90,22 @@ class Settings extends React.Component {
     };
   }
 
-  change() {
-    // TODO: check changed username and put on server
+  apply(){
     this.props.history.push(`/profile/${this.props.match.params.id}`);
   }
 
   componentDidMount() {
-    fetch(`${getDomain()}/users/${this.props.match.params.id}`, {
+    fetch(`${getDomain()}/users/me`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Access-Token": localStorage.getItem("token")
       }
     })
       .then(response => response.json())
-      .then( user => {
-        this.setState({mine: user.token === localStorage.getItem("token")});
-        if (this.state.mine){
-          this.setState({name: user.name});
-          this.setState({username: user.username});
-          this.setState({password: user.password});
-          this.setState({birthday: user.birthday});
-        }
+      .then( res => {
+        const user = new User(res);
+        this.setState({mine: true});
       })
       .catch(err => {
         console.log(err);
@@ -148,7 +145,7 @@ class Settings extends React.Component {
                 this.setState({usernameEdit: true});
               }}
             >
-              New
+              Change
             </Button>
           </td>
         </div>
@@ -178,17 +175,17 @@ class Settings extends React.Component {
           <Button
             width="40%"
             onClick={() => {
-              this.change();
+              this.apply();
             }}
           >
-            Change
+            Apply
           </Button>
         </ButtonContainer>
         <ButtonContainer>
           <Button
             width="40%"
             onClick={() => {
-              this.props.history.push(`/profile/${this.props.match.params.id}`);
+              this.props.history.push(`/game`);
             }}
           >
             Go back
