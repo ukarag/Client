@@ -2,9 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import { Button } from "../../views/design/Button";
 import User from "../shared/models/User";
+
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -16,6 +17,7 @@ const InputField = styled.input`
     color: rgba(255, 255, 255, 0.2);
   }
   height: 35px;
+  width: ${props => props.width || null};
   padding-left: 15px;
   margin-left: -4px;
   border: none;
@@ -61,7 +63,7 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-class MyProfile extends React.Component {
+class Settings extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -74,9 +76,7 @@ class MyProfile extends React.Component {
   }
 
   handleInputChange(key, value) {
-    this.setState({username: value });
-    this.setState({birthday: value });
-    //this.setState({ [key]: value });
+    this.setState({ [key]: value });
   }
 
   /*handleChange(key) {
@@ -85,17 +85,7 @@ class MyProfile extends React.Component {
     };
   }*/
 
-  save() {
-    // TODO: check changed username and put on server
-    const usernameList = this.state.userList.map(p => p.username);
-    if (usernameList.includes(this.state.username)) {
-      this.setState({exist: true});
-      this.props.history.push(`/profile/change`);
-      console.log("username already in list");
-    }
-    else {
-      console.log("does it work?");
-      //this.props.history.push(`/Login`);
+  saveUsername() {
       fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
         method: "PUT",
         headers: {
@@ -103,20 +93,43 @@ class MyProfile extends React.Component {
         },
         body: JSON.stringify({
           username: this.state.username,
+        })
+      })
+        .then(response => response.json())
+        .then( res=>{
+          if (res.error) {
+            alert(res.message);
+            this.setState({username: null});
+          } else{
+            this.props.history.push(`/profile/${localStorage.getItem("user_id")}/show`);
+          }
+        })
+        .catch(err => {
+          if (err.message.match(/Failed to fetch/)) {
+            alert("The server cannot be reached. Did you start it?");
+          } else {
+            alert(`Something went wrong during the login: ${err.message}`);
+          }
+        });
+  }
+
+  saveBirthday() {
+      fetch(`${getDomain()}/users/${localStorage.getItem("user_id")}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
           birthday: this.state.birthday
         })
       })
         .then(response => response.json())
         .then( res=>{
-          console.log("inside")
           if (res.error) {
-            console.log("res not ok");
             alert(res.message);
-            this.setState({username: null});
             this.setState({birthday: null});
           } else{
-            console.log("res ok");
-            this.props.history.push('/game');
+            this.props.history.push(`/profile/${localStorage.getItem("user_id")}/show`);
           }
         })
         .catch(err => {
@@ -127,10 +140,9 @@ class MyProfile extends React.Component {
           }
         });
     }
-  }
 
   return(){ //go back to the site of game when we dont want to change
-    this.props.history.push(`/game`);
+    this.props.history.push(`/profile/${localStorage.getItem("user_id")}/show`);
   }
 
   componentDidMount() {
@@ -153,39 +165,57 @@ class MyProfile extends React.Component {
 
   render() {
     return (
-      <BaseContainer>
-        <FormContainer>
-          <Form>
-            <Label>New Username</Label>
-            <InputField
-              placeholder="Enter your new username here.."
-              onChange={e => {
-                this.handleInputChange("username", e.target.value);
-              }}
-            />
+        <Container>
+            <table width="350px">
+              <tr>
+                <td >username:</td>
+              </tr>
+                <InputField
+                  width="100%"
+                  placeholder="new username"
+                  onChange={e => {
+                    this.handleInputChange("username", e.target.value);
+                  }}
+                />
 
-            <Label>New Birthday</Label>
-            <InputField
-              // Fragen wegen Datum
-              placeholder="Enter your new birthday here.."
-              onChange={e => {
-                this.handleInputChange("birthday", e.target.value);
-              }}
-            />
+                <ButtonContainer>
+                  <Button
+                    disabled={!this.state.username}
+                    width="40%"
+                    onClick={() => {
+                      this.saveUsername();
+                    }}
+                  >
+                    Save Username
+                  </Button>
+                </ButtonContainer>
+
+              <tr>
+                <td>birthday:</td>
+              </tr>
+                <InputField
+                  width="100%"
+                  placeholder="dd.MM.yyyy"
+                  onChange={e => {
+                    this.handleInputChange("birthday", e.target.value);
+                  }}
+                />
+                <ButtonContainer>
+                  <Button
+                    disabled={!this.state.birthday}
+                    width="40%"
+                    onClick={() => {
+                      this.saveBirthday();
+                    }}
+                  >
+                    Save Birthday
+                  </Button>
+                </ButtonContainer>
+
+            </table>
             <ButtonContainer>
               <Button
-                disabled={!this.state.username || !this.state.birthday}
-                width="50%"
-                onClick={() => {
-                  this.save();
-                }}
-              >
-                Save
-              </Button>
-            </ButtonContainer>
-            <ButtonContainer>
-              <Button
-                width="50%"
+                width="75%"
                 onClick={() => {
                   this.return();
                 }}
@@ -193,11 +223,9 @@ class MyProfile extends React.Component {
                 Back
               </Button>
             </ButtonContainer>
-          </Form>
-        </FormContainer>
-      </BaseContainer>
+          </Container>
     );
   }
 }
 
-export default withRouter(MyProfile);
+export default withRouter(Settings);

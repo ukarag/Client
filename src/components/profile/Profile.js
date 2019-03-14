@@ -9,7 +9,7 @@ import { Button } from "../../views/design/Button";
 
 const Container = styled(BaseContainer)`
   color: white;
-  text-align: center;
+  text-align: left;
 `;
 
 const ButtonContainer = styled.div`
@@ -19,19 +19,6 @@ const ButtonContainer = styled.div`
 `;
 
 
-const InputField = styled.input`
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.2);
-  }
-  height: 35px;
-  padding-left: 15px;
-  margin-left: -4px;
-  border: none;
-  border-radius: 20px;
-  margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-`;
 const Label = styled.label`
   color: white;
   margin-bottom: 10px;
@@ -42,6 +29,7 @@ class UserProfile extends React.Component {
   constructor() {
     super();
     this.state = {
+      name: null,
       username: null,
       birthday: null,
       creationDate: null,
@@ -70,6 +58,7 @@ class UserProfile extends React.Component {
       .then(response => response.json())
 
       .then(user => {
+        this.setState({name: user.name})
         this.setState({username: user.username });
         this.setState({birthday: user.birthday});
         this.setState({creationDate: user.creationDate});
@@ -87,6 +76,10 @@ class UserProfile extends React.Component {
       //<BaseContainer>
       <Container>
         <table width="400px">
+          <tr>
+            <th >name:</th>
+            <th>{this.state.name}</th>
+          </tr>
           <tr>
             <th >username:</th>
             <th>{this.state.username}</th>
@@ -108,7 +101,7 @@ class UserProfile extends React.Component {
         <ButtonContainer>
           <Button
             disabled={!this.state.mine}
-            width="20%"
+            width="30%"
             onClick={() => {
               this.settings();
             }}
@@ -119,7 +112,7 @@ class UserProfile extends React.Component {
 
         <ButtonContainer>
           <Button
-            width="20%"
+            width="30%"
             onClick={() => {
               this.getBack();
             }}

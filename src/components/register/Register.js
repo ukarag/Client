@@ -77,7 +77,8 @@ class Register extends React.Component {
       repeatedPassword: null,
       validate: true,
       exist: false,
-      userList: null
+      userList: null,
+      creationDate: null
     };
   }
   /**
@@ -86,18 +87,11 @@ class Register extends React.Component {
    */
 
   register() {
-    const usernameList = this.state.userList.map(p => p.username);
-    if (usernameList.includes(this.state.username)) {
-      this.setState({exist: true});
-      this.props.history.push(`/register`);
-      console.log("username already in list");
-    }
-    else if(this.state.password !== this.state.repeatedPassword){
+    if(this.state.password !== this.state.repeatedPassword){
       this.setState({validate: false});
       this.setState({password: null});
       this.setState({repeatedPassword: null});
       this.props.history.push(`/register`);
-      console.log("repeatedPassword != password");
     }
     else {
       //this.props.history.push(`/login`);
@@ -110,6 +104,7 @@ class Register extends React.Component {
           name: this.state.name,
           username: this.state.username,
           password: this.state.password,
+          creationDate: this.getDate()
         })
       })
         .then(async res=>{
@@ -121,7 +116,6 @@ class Register extends React.Component {
             this.setState({password: null});
             this.setState({repeatedPassword: null});
             this.setState({repeatedPassword: null});
-            console.log("res not ok!");
           } else{
             this.props.history.push('/login')
           }
@@ -140,6 +134,9 @@ class Register extends React.Component {
     this.props.history.push("/login");
   }
 
+  getDate(){
+    return new Date().toLocaleString();
+  }
   /**
    *  Every time the user enters something in the input field, the state gets updated.
    * @param key (the key of the state for identifying the field that needs to be updated)

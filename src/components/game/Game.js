@@ -41,8 +41,6 @@ class Game extends React.Component {
   }
 
   logout() {
-    //localStorage.removeItem("token");
-    //this.props.history.push("/login");
     console.log(localStorage);
     // if (localStorage.getItem("user_id") != null) {
     fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
@@ -58,7 +56,6 @@ class Game extends React.Component {
         } else {
           localStorage.removeItem("token");
           localStorage.removeItem("user_id")
-          console.log("logging out")
           this.props.history.push("/login");
         }
       })
@@ -72,7 +69,7 @@ class Game extends React.Component {
 
 
   profile(){
-    this.props.history.push("/profile/MyProfile")
+    this.props.history.push("/profile/${user.id}/show")
   }
 
   componentDidMount() {
