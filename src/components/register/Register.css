@@ -1,0 +1,7 @@
+.passwordMatchWarning{
+    color: darkred;
+
+}
+.usernameExistsWarning{
+    color: darkred;
+}

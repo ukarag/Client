@@ -6,6 +6,7 @@ import Player from "../../views/Player";
 import { Spinner } from "../../views/design/Spinner";
 import { Button } from "../../views/design/Button";
 import { withRouter } from "react-router-dom";
+import User from "../shared/models/User";
 
 const Container = styled(BaseContainer)`
   color: white;
@@ -22,6 +23,13 @@ const PlayerContainer = styled.li`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: ${props => (props.disabled ? "default" : "pointer")};
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 `;
 
 class Game extends React.Component {
@@ -33,8 +41,35 @@ class Game extends React.Component {
   }
 
   logout() {
-    localStorage.removeItem("token");
-    this.props.history.push("/login");
+    console.log(localStorage);
+    // if (localStorage.getItem("user_id") != null) {
+    fetch(`${getDomain()}/logout/${localStorage.getItem("user_id")}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then(response => response.json())
+      .then(res => {
+        if (res.error) {
+          alert(res.message);
+        } else {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_id")
+          this.props.history.push("/login");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong fetching the users: " + err);
+      });
+  } //else {
+    //this.props.history.push("/login");
+
+
+
+  profile(){
+    this.props.history.push("/profile/${user.id}/show")
   }
 
   componentDidMount() {
@@ -62,7 +97,7 @@ class Game extends React.Component {
   render() {
     return (
       <Container>
-        <h2>Happy Coding! </h2>
+        <h2>Welcome! </h2>
         <p>Get all users from secure end point:</p>
         {!this.state.users ? (
           <Spinner />
@@ -70,21 +105,30 @@ class Game extends React.Component {
           <div>
             <Users>
               {this.state.users.map(user => {
-                return (
-                  <PlayerContainer key={user.id}>
+                return(
+                  <PlayerContainer
+                    key={user.id}
+                    onClick = {() => {
+                      this.props.history.push(`/profile/${user.id}/show`);
+                    }}
+                  >
                     <Player user={user} />
                   </PlayerContainer>
                 );
               })}
             </Users>
-            <Button
-              width="100%"
-              onClick={() => {
-                this.logout();
-              }}
-            >
-              Logout
-            </Button>
+
+            <ButtonContainer>
+              <Button
+                width="100%"
+                onClick={() => {
+                  this.logout();
+                }}
+              >
+                Logout
+              </Button>
+            </ButtonContainer>
+
           </div>
         )}
       </Container>
