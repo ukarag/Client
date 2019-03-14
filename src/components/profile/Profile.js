@@ -2,12 +2,14 @@ import React from "react";
 import styled from "styled-components";
 import { BaseContainer } from "../../helpers/layout";
 import { getDomain } from "../../helpers/getDomain";
-import { Button } from "../../views/design/Button";
+import User from "../shared/models/User";
 import { withRouter } from "react-router-dom";
+import { Button } from "../../views/design/Button";
+//import { Spinner } from "../../views/design/Spinner";
 
 const Container = styled(BaseContainer)`
   color: white;
-  text-align: left;
+  text-align: center;
 `;
 
 const ButtonContainer = styled.div`
@@ -16,39 +18,63 @@ const ButtonContainer = styled.div`
   margin-top: 20px;
 `;
 
-class Profile extends React.Component {
+
+const InputField = styled.input`
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+  }
+  height: 35px;
+  padding-left: 15px;
+  margin-left: -4px;
+  border: none;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+`;
+const Label = styled.label`
+  color: white;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+`;
+
+class UserProfile extends React.Component {
   constructor() {
     super();
     this.state = {
       username: null,
-      status: null,
-      creationDate: null,
       birthday: null,
-      mine: false
+      creationDate: null,
+      status: null,
+      mine:false
+
     };
   }
 
-  return() {
-    this.props.history.push(`/game`);
+  getBack()  {
+    this.props.history.push("/game");
   }
 
-  settings() {
+  settings(){
     this.props.history.push(`/profile/settings`);
   }
 
   componentDidMount() {
+
     fetch(`${getDomain()}/users/${this.props.match.params.id}`, {
       method: "GET",
-      headers: {"Content-Type": "application/json"}
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
       .then(response => response.json())
-      .then( user => {
-        this.setState({name: user.name});
-        this.setState({username: user.username});
-        this.setState({status: user.status});
-        this.setState({creationDate: user.creationDate});
+
+      .then(user => {
+        this.setState({username: user.username });
         this.setState({birthday: user.birthday});
-        this.setState({mine: user.token === localStorage.getItem("token")})
+        this.setState({creationDate: user.creationDate});
+        this.setState({status: user.status});
+        this.setState({mine: user.token === localStorage.getItem("token")});
       })
       .catch(err => {
         console.log(err);
@@ -57,17 +83,10 @@ class Profile extends React.Component {
   }
 
   render() {
-    const style = {
-      display: this.state.mine ? '' : 'none'
-    };
     return (
+      //<BaseContainer>
       <Container>
-        <h2>Profile of {this.state.username} </h2>
         <table width="400px">
-          <tr>
-            <th >user:</th>
-            <th>{this.state.user}</th>
-          </tr>
           <tr>
             <th >username:</th>
             <th>{this.state.username}</th>
@@ -85,21 +104,11 @@ class Profile extends React.Component {
             <th>{this.state.birthday}</th>
           </tr>
         </table>
-        <ButtonContainer>
-          <Button
-            width="40%"
-            onClick={() => {
-              this.return();
-            }}
-          >
-            Return
-          </Button>
-        </ButtonContainer>
 
         <ButtonContainer>
-
           <Button
-            width="40%"
+            disabled={!this.state.mine}
+            width="20%"
             onClick={() => {
               this.settings();
             }}
@@ -107,9 +116,20 @@ class Profile extends React.Component {
             Settings
           </Button>
         </ButtonContainer>
+
+        <ButtonContainer>
+          <Button
+            width="20%"
+            onClick={() => {
+              this.getBack();
+            }}
+          >
+            Go Back
+          </Button>
+        </ButtonContainer>
       </Container>
+      //</BaseContainer>
     );
   }
 }
-
-export default withRouter(Profile);
+export default withRouter(UserProfile);
